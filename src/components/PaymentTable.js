@@ -10,36 +10,38 @@ export default function PaymentTable(){
     let loanId = useSelector((store) => store.loanId.value);
     const [schedule, setSchedule] = React.useState([]);
     const [currentWeek, setCurrentWeek] = React.useState();
-    const [balance , setBalance] = React.useState("")
     const [transactions, setTransactions] = React.useState()
     const [data, setData] = React.useState()
-    const [tableActive, setTableActive] = React.useState(false);
+    const [paymentLength,setPaymentLength] = React.useState()
 
+    const getTransactions = async() =>{
+        // setLoading(false);
+        try{
+            const {data: response } = await axios.get('http://localhost:9090/api/v1/loanTransactions')
+            setTransactions(response)
+        }catch(error){
+            console.error(error.message);
+        }
+        // setLoading(false)
+    }
 
+    
+    const getData = async() =>{
+        // setLoading(false);
+        try{
+            const {data: response } = await axios.get('http://localhost:9090/api/v1/loanDetails')
+            setData(response)
+        }catch(error){
+            console.error(error.message);
+        }
+        // setLoading(false)
+    }
 
 
 useEffect(()=>{
-
-    const getTransactions = async() =>{
-        const res = await axios.get('http://localhost:9090/api/v1/loanTransactions')
-        .then(res => {setTransactions(res.data)})
-        .catch(err => console.error(err))
-        console.log("GET TRANSACTION ")
-            }
-            getTransactions()
-            .catch(console.error)
-  
-
-           
-                const getData = async() =>{
-                    const res = await axios.get('http://localhost:9090/api/v1/loanDetails')
-                    .then(res=> setData(res.data))
-                    .catch(err => console.error(err))
-                    console.log("GET Data ")
-            }
-            getData()
-            .catch(console.error)
-
+    getTransactions()
+    getData()
+ 
 
             },[schedule])
 
@@ -55,6 +57,8 @@ function generateSchedule(){
     let totalInterest = data.filter((obj)=> {return obj._id===loanId}).map((item)=>{return item.interestRate})
     let date = data.filter(function(obj){return obj._id===loanId}).map((item)=>{return (item.date)})
     let paid = transactions.filter((obj)=> {return obj.loanId ===loanId }).sort(function(a,b){return a.period-b.period})
+    setPaymentLength(paid.length)
+    console.log(paymentLength)
     let paymentAmount = totalDue*(1+(Number(totalInterest)))/totalPeriods
     let emptyArray = [];
     for (let i=1; i<=totalPeriods ; i++){
@@ -68,13 +72,9 @@ function generateSchedule(){
                 d.setDate(d.getDate(date)+((7*i)))
                 emptyArray.push({_id: i+loanId, loanId: loanId, date: d.toDateString() ,period: i, paymentAmount: paymentAmount})
                 
-            }      
-                      
-
+            }               
             }
-         
             setSchedule(prevState=> emptyArray)
-            alert("Generating Schedule")
   
         }
 
@@ -86,14 +86,6 @@ function generateSchedule(){
         const weeks =  Math.floor((dateDiff/8.64e7)/7);
         setCurrentWeek(weeks)
     },[])
-
-
-
-
-
-    
-
-
 
 function convertToWeek(date){
     const today = new Date(date)
