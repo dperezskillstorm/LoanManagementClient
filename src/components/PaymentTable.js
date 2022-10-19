@@ -10,9 +10,27 @@ export default function PaymentTable(){
     let loanId = useSelector((store) => store.loanId.value);
     const [schedule, setSchedule] = React.useState([]);
     const [currentWeek, setCurrentWeek] = React.useState();
-    const [transactions, setTransactions] = React.useState()
+    const [transactions, setTransactions] = React.useState([])
     const [data, setData] = React.useState()
     const [paymentLength,setPaymentLength] = React.useState()
+    const [formValues, setFormValues] = React.useState({
+        _id: "",
+            paymentAmount: "",
+            date: "",
+            period: "",
+            loanId: "",
+            status:false
+      })
+
+      const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormValues({
+          ...formValues,
+          [name]: value,
+      
+        });
+      };
+    
 
     const getTransactions = async() =>{
         // setLoading(false);
@@ -24,6 +42,8 @@ export default function PaymentTable(){
         }
         // setLoading(false)
     }
+
+
 
     
     const getData = async() =>{
@@ -38,12 +58,16 @@ export default function PaymentTable(){
     }
 
 
+
+
 useEffect(()=>{
     getTransactions()
     getData()
+
+    
  
 
-            },[schedule])
+            },[schedule,loanId])
 
     
 
@@ -75,6 +99,7 @@ function generateSchedule(){
             }               
             }
             setSchedule(prevState=> emptyArray)
+            console.log("schedule Set", schedule)
   
         }
 
@@ -95,32 +120,88 @@ function convertToWeek(date){
     return weeks
 }
 
+//to avoid double transation sql table reuiqre transaction Id to be unique
+// transactionid is based on loan number and payperiod
 
-const processPayment = async(loanid,period,date,payment) =>{
-    let transactionId = loanId+period
+async function processPayment (loanid,period,date,payment){
+    let transactionId = String(loanId)+String(period)
+    let interest = data.filter(function(obj){return obj._id===loanId}).map((item)=>{return (item.interestRate)})
+    let periods = data.filter(function(obj){return obj._id===loanId}).map((item)=>{return (item.periods)})
+    let loanAmount = data.filter(function(obj){return obj._id===loanId}).map((item)=>{return (item.loanAmount)})
+
+
+
+    console.log(interest, periods, loanAmount)
+
     const payload = {
         _id:transactionId,
         loanId: loanId , 
         period: period, 
-        paymentAmount: payment, 
+        paymentAmount: (loanAmount * (1 + Number(interest) ))/periods,
         date: date,
     status: "Paid",
     }
-    
-        const resp = await axios.post(`http://localhost:9090/api/v1/loanTransactions/`,payload)
-        .then(resp =>{console.log(resp.data) ; generateSchedule()})
-        .catch(error =>{console.error(error); return Promise.reject(error)})
-            }
-        
+
+    await axios.post(`http://localhost:9090/api/v1/loanTransactions`,payload)
+    .then(resp =>{console.log(resp.data); generateSchedule()  })
+    .catch(error =>{console.error(error); return Promise.reject(error)})
+
+}
+
+async function processPaymentInterest (period,date,payment){
+    let interest = data.filter(function(obj){return obj._id===loanId}).map((item)=>{return (item.interestRate)})
+    console.log(interest)
+    let transactionId = String(loanId)+String(period)+"0001"
+    const payload = {
+        _id:transactionId,
+        loanId: loanId , 
+        period: period, 
+        paymentAmount: interest*100, 
+        date: date,
+    status: "Interest",
+    }
+
+    await axios.post(`http://localhost:9090/api/v1/loanTransactions`,payload)
+    .then(resp =>{console.log(resp.data); generateSchedule()  })
+    .catch(error =>{console.error(error); return Promise.reject(error)})
+
+}
+
+
             function handlePayment(client_Id,period,date,payment){
                 processPayment(client_Id,period,date,payment) 
            }
+
+           async function handleSubmit(event){
+            let transactionId = String(loanId)+String(formValues.period)
+            event.preventDefault()
+            //yyyy-mm-dd
+            let year = formValues.date.slice(0,4)
+            let month = formValues.date.slice(5,7)
+            let day = formValues.date.slice(8,10)
+            let formatedDate =year+"-"+month+"-"+day
+                const payload =
+                {   
+                    _id:transactionId,
+                    loanId: formValues.loanId,
+                    paymentAmount: Number(formValues.paymentAmount), 
+                    date: formatedDate,
+                    period: formValues.period,
+                    status: formValues.status} 
+                    //AxiosPost
+                    await axios.post(`http://localhost:9090/api/v1/loanTransactions`,payload)
+                    .then(resp =>{console.log(resp.data); generateSchedule()  })
+                    .catch(error =>{console.error(error); return Promise.reject(error)})
+              }
+    
+
 
 
 return(
         <Fragment>
             <button onClick={()=>generateSchedule()}>Generate Table</button>
     {data && <h1>Payment Schedule: {data.filter(function(obj){return obj._id===loanId}).map((item)=>{return (item.firstName +" "+ item.lastName)})}</h1> }
+   <form onSubmit={handleSubmit}>
     <table id="customers">
         <thead>
             <tr>
@@ -143,33 +224,81 @@ return(
                     <td>{item.date}</td>
                     <td>{item.paymentAmount}</td>
                     <td>{item.status==="Paid" ? item.status : convertToWeek(item.date) === currentWeek ? 'Due' : item.status}</td>
-                    <td>{item.status!=="Paid" && <button onClick={()=>handlePayment(item.loanId,item.period,item.date,item.paymentAmount)}>Payment</button>}</td>
+                    <td>{item.status!=="Paid" && <button onClick={()=>handlePayment(item.loanId,item.period,item.date,item.paymentAmount)}>Payment</button>}
+                    {item.status!=="Paid" && <button onClick={()=>processPaymentInterest(item.period,item.date,item.paymentAmount)}>Interest</button>}</td>
 
                 </tr>
             
     )})} 
       
+      
        </tbody> 
+       
+    </table>
+    <h1>Extra Payments</h1>
+    <table id="customers">
+        <thead>
+            <tr>
+                <th>Client Id</th>
+                <th>Period</th>
+                <th>Date</th>
+                <th>Payment Due</th>
+                <th>Status</th> 
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+         
+             {transactions.filter(function(obj){return obj.loanId === loanId}).filter(function(obj){return obj.period > schedule.length}).map((item) => {
+                return( 
+                    <tr key={item._id}> 
+                     <td>{item.loanId}</td>
+                    <td>{item.period}</td>
+                    <td>{item.date}</td>
+                    <td>{item.paymentAmount}</td>
+                    <td>{item.status==="Paid" ? item.status : convertToWeek(item.date) === currentWeek ? 'Due' : item.status}</td>
+                    <td>{item.status!=="Paid" && <button onClick={()=>handlePayment(item.loanId,item.period,item.date,item.paymentAmount)}>Payment</button>}
+                    {item.status!=="Paid" && <button onClick={()=>processPaymentInterest(item.period,item.date,item.paymentAmount)}>Interest</button>}</td>
+
+                </tr>
+            
+    )})} 
+       <tr>
+             
+                    <td><input name="loanId" type='text' placeholder="loanId"  value={formValues.loanId} onChange={handleInputChange}/></td>
+                    <td><input style={{"width":70}} name="period" type='text' placeholder="Period" value={formValues.period} onChange={handleInputChange} /></td>
+                    <td><input name="date" type='date' value={formValues.date} onChange={handleInputChange}/></td>  
+                    <td><input name="paymentAmount" type='number' placeholder="Payment Amount"  value={formValues.paymentAmount} onChange={handleInputChange} /></td>
+                    <td><input name="status" type='text' placeholder="Status"  value={formValues.status} onChange={handleInputChange} /></td>
+
+                    <td>    <button type="submit">Add + </button>
+</td>
+                    </tr>
+      
+       </tbody>
+        
     </table>
     <h1>Summary</h1>
     <table id="customers">  
         <thead>
             <tr>
-                <th>Total Due w/Interest</th>
-                <th>Total Paid</th>
+                <th>Total Due</th>
+                <th>Total Interest Only Payments</th>
+                <th>Payments Recieved</th>
             </tr>
         </thead>
 
         <tbody>
-                    <tr > 
-                    {/* <td>{data.reduce((prev,curr)=> prev+curr.loanAmount ,0)}</td> */}
-                    <td>{schedule.filter(function(obj){return obj.status!=="Paid"}).reduce((prev,curr)=> prev+curr.paymentAmount ,0)}</td>
-                    <td>{schedule.filter(function(obj){return obj.status==="Paid"}).reduce((prev,curr)=> prev+curr.paymentAmount ,0)}</td> 
+                   <tr>
+                   <td>{schedule.filter(function(obj){return obj.status!=="Interest"}).filter(function(obj){return obj.status!=="Paid"}).reduce((prev,curr)=> prev+curr.paymentAmount ,0)}</td>
+                    <td>{transactions.filter(function(obj){return obj.loanId===loanId}).filter(function(obj){return obj.status==="Interest"}).reduce((prev,curr)=> prev+curr.paymentAmount ,0)}</td>
+                    <td>{transactions.filter(function(obj){return obj.loanId===loanId}).filter(function(obj){return obj.status==="Paid"}).reduce((prev,curr)=> prev+curr.paymentAmount ,0)}</td> 
                 </tr>
             
             
         </tbody>
         </table> 
+        </form>
     </Fragment>
     )
 

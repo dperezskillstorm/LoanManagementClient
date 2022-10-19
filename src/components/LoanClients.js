@@ -14,7 +14,7 @@ export default function LoanClients(){
     
     //States
     const [data, setData] = useState([]);
-    const[activeLoan, setActiveLoan] = useState(216)
+    const[activeLoan, setActiveLoan] = useState(220)
     const [formValues, setFormValues] = React.useState({
         _id: "",
             loanAmount: "",
@@ -50,7 +50,7 @@ export default function LoanClients(){
 
     //Deletes Data from form using axios delete
   async function handleDelete (key){
-    const resp = await axios.delete(`http://localhost:9090/api/v1/loanDetails/${key}`)
+    await axios.delete(`http://localhost:9090/api/v1/loanDetails/${key}`)
     .then(resp =>{console.log(resp.data); getData()  })
     .catch(error =>{console.error(error); return Promise.reject(error)})
 
@@ -109,6 +109,7 @@ export default function LoanClients(){
                 <th>Loan#</th>
                 <th>Period</th>
                 <th>Loan Amount</th>
+                <th>Total Due</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Interest Rate</th>
@@ -119,12 +120,13 @@ export default function LoanClients(){
             </thead>
 
         <tbody>
-             {data.map((item) => {
+             {data.filter(function(obj){return obj.status==="Active"}).map((item) => {
                 return( 
                     <tr onClick={()=>activeLoanHandle(item._id)}  key={item._id}>
                     <th>{item._id}</th>
                     <td>{item.periods}</td>
                     <td>{item.loanAmount}</td>
+                    <td>{item.loanAmount * (1+ item.interestRate)}</td>
                     <td>{item.firstName}</td>
                     <td>{item.lastName}</td>
                     <td>{item.interestRate}</td>
