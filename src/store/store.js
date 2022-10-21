@@ -1,6 +1,9 @@
 import { configureStore,  } from "@reduxjs/toolkit";
 import loandIdReducer from "./features/loanIdSlice"
+import loanDetailReducer from "./features/loanDetailSlice";
+import generateScheduleReducer from "./features/generateScheduleSlice";
 import storage  from "redux-persist/lib/storage";
+
 import { combineReducers } from 'redux';
 import { persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER} from 'redux-persist';
 
@@ -12,6 +15,9 @@ const persistConfig ={
 
 const reducers = combineReducers({
     loanId: loandIdReducer,
+    loanDetail: loanDetailReducer,
+    generateSchedule : generateScheduleReducer,
+
    
 })
 
