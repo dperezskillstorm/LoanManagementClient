@@ -283,9 +283,10 @@ const handleEditInputChange = (e) => {
         <tbody>
             
              {data.filter(function(obj){return obj.status!=="Closed"}).map((item) => {
+              let active = item._id === activeLoan ? "#04AA6D":"";
                 return( 
                     <>
-                    <tr key={item._id} onClick={()=>activeLoanHandle(item)}>
+                    <tr key={item._id} onClick={()=>activeLoanHandle(item)} style={{backgroundColor: active}}>
                     {editRecordId ===  item._id ?
                    
           

@@ -99,7 +99,7 @@ function generateSchedule(){
             }else{
                 const d = new Date(date);
                 d.setDate(d.getDate(date)+((7*i)))
-                emptyArray.push({_id: i+loanId, loanId: loanId, date: d.toDateString() ,period: i, paymentAmount: paymentAmount})
+                emptyArray.push({_id: i+loanId, loanId: loanId, date: d.toDateString() ,period: i, paymentAmount: paymentAmount,status: ""})
                 
             }               
             }
@@ -272,13 +272,14 @@ return(
         <tbody>
          
              {schedule.map((item) => {
+                let currWeek = convertToWeek(item.date) ===currentWeek ? "#04AA6D":""
                 return( 
-                    <tr key={item._id}> 
+                    <tr key={item._id}  style={{backgroundColor:currWeek}}> 
                      <td>{item.loanId}</td>
                     <td>{item.period}</td>
                     <td>{item.date}</td>
                     <td>{item.paymentAmount}</td>
-                    <td>{item.status==="Paid" ? item.status : convertToWeek(item.date) === currentWeek ? 'Due' : item.status}</td>
+                    <td>{item.status!=="" ? item.status : convertToWeek(item.date) === currentWeek ? 'Due' : item.status}</td>
                     <td>{item.status!=="Paid" && <button onClick={()=>handlePayment(item.loanId,item.period,item.date,item.paymentAmount)}>Payment</button>}
                     {item.status!=="Paid" && <button onClick={()=>processPaymentInterest(item.period,item.date,item.paymentAmount)}>Interest</button>}</td>
 
