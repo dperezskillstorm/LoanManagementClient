@@ -26,3 +26,15 @@
     color: white;
   }
 
+  select {
+    width: 140px;
+    height: 35px;
+    padding: 5px 35px 5px 5px;
+    font-size: 18px;
+    border: 2px solid #ccc;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0;
+  }
+

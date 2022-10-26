@@ -10,6 +10,13 @@ export default function PaymentTableSummary(props){
     const dispatch = useDispatch()
     let loanId = props.loanId
     let loanDetails = props.loanDetails
+
+    const StatusOptions = [
+        {value: "", text:"Choose"},
+        {value: "Paid", text:"Paid"},
+        {value: "Interest", text:"Interest"},
+        {value: "Draw", text:"Draw"},
+]
  
     const [currentWeek, setCurrentWeek] = React.useState();
     const transactions = props.transactions
@@ -157,7 +164,7 @@ async function processPaymentInterest (period,date,payment){
 
 return(
         <Fragment>
-    <h1>Payment Schedule: {props.loanDetails.firstName} {props.loanDetails.lastName}</h1>           
+    <h1>Payment Schedule: {props.loanDetails.firstName} {props.loanDetails.lastName}</h1>  <button onClick={props.handleShowMore}>Show More</button>         
    <form onSubmit={handleCustomSubmit}>
 
     <table  id="customers">
@@ -176,7 +183,14 @@ return(
              <td><input style={{"width":70}} name="period" type='text'   value={transactions.length+1} onChange={handleCustomInputChange} /></td>
              <td><input name="date" type='date' value={customFormValues.date} onChange={handleCustomInputChange}/></td>  
              <td><input name="paymentAmount" type='number' placeholder="Payment Amount"  value={customFormValues.paymentAmount} onChange={handleCustomInputChange} /></td>
-             <td><input name="status" type='text' placeholder="Status"  value={customFormValues.status} onChange={handleCustomInputChange} /></td>
+             <td>
+            <select required="true" name="status" defaultValue={customFormValues.status} onChange={handleCustomInputChange}>
+        {StatusOptions.map(option => (
+            <option key={option.value} value={option.value}>
+            {option.text}
+            </option>))}
+        </select>
+      </td>
 
              <td>    <button type="submit">Add + </button>
 </td>
@@ -184,7 +198,7 @@ return(
         </thead>
         <tbody>
          
-             {transactions.map((item) => {
+             {transactions.slice(0,props.tableLength).sort((a,b)=> b.period - a.period).map((item) => {
                 return( 
                     <tr key={item._id}> 
                      <td>{item.loanId}</td>

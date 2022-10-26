@@ -7,9 +7,11 @@ function DetailsTables({data,transactions, handleRefresh}) {
 
    async function handleDelete (key){
     await axios.delete(`http://localhost:8080/api/v1/loanDetails/${key}`)
-    .then(resp =>{console.log(resp.data); handleRefresh()  })
+    .then(resp =>{console.log(resp.data) })
     .then(resp => alert(`Deleted Client:${key}`))
     .catch(error =>{console.error(error); return Promise.reject(error)})
+
+    window.location.reload()
 
 }
 

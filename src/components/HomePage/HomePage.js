@@ -10,7 +10,7 @@ import AddNewLoan from '../LoanClients/AddNewLoan';
 
 
 export default function HomePage(){
-
+    const [tableLength, setTableLength] = React.useState(10);
     const [_id,set_Id] = React.useState(2373)
     const [totalPaid,setTotalPaid] = React.useState()
 
@@ -112,12 +112,24 @@ export default function HomePage(){
         //Get Api
         getData();
         getTransactions();
+
         
     },[update,_id])
+
+    React.useEffect(()=>{ 
+        //Get Api
+        setTableLength(10)
+        
+        
+    },[_id])
 
     function handleRefresh(){
         setUpdate(prevState=>(!prevState))
 
+    }
+
+    function handleShowMore(){
+        setTableLength((prev)=>(prev+10) )
     }
 
     return(
@@ -168,6 +180,7 @@ export default function HomePage(){
  </div>
 
 
+
      {/**Data Tables */}
      <div style={{marginTop:20}}>
 
@@ -175,7 +188,7 @@ export default function HomePage(){
    <DetailsTables transactions={transactions} data={data.filter(function(obj){return obj._id === _id})[0]}handleRefresh={handleRefresh} />
     }
     {(loadingData && loadingTrans) &&
-    <PaymentTableSummary transactions={transactions} loanDetails ={data.filter(function(obj){return obj._id === _id})[0]} handleRefresh={handleRefresh}/>
+    <PaymentTableSummary transactions={transactions} loanDetails ={data.filter(function(obj){return obj._id === _id})[0]} handleRefresh={handleRefresh} handleShowMore={handleShowMore} tableLength={tableLength}/>
     }
  
 
