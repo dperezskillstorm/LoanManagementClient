@@ -1,18 +1,17 @@
 import React from 'react'
 import "../HomePage/homepage.css"
 import axios from "axios"
-import { useSelector } from 'react-redux';
 import PaymentTableSummary from '../PaymentTableSummary';
 import DetailsTables from './DetailsTables';
 import Popup from './Popup';
-import LoanClients from '../LoanClients/LoanClients';
 import AddNewLoan from '../LoanClients/AddNewLoan';
+import PaymentsThisWeek from '../Reports/PaymentsThisWeek';
+import CollectionList from '../Reports/CollectionList';
 
 
 export default function HomePage(){
     const [tableLength, setTableLength] = React.useState(10);
     const [_id,set_Id] = React.useState(2373)
-    const [totalPaid,setTotalPaid] = React.useState()
 
 
 
@@ -95,14 +94,32 @@ export default function HomePage(){
             },[])
 
     const [trigger, setTrigger] = React.useState(false)
+    const [reportTrigger, setReportTrigger] = React.useState(false)
+    const [collectionTrigger, setCollectionTrigger] = React.useState(false)
+
 
    function handleAddClient(){
     setTrigger(true)
 
    } 
 
+   function handleReportButton(){
+    setReportTrigger(true)
 
-  let homeScreenArray = [{title:"+ New Loan",handle: handleAddClient},{title:"TBD",link:"",description:"some stuff right here"},{title:"Collect Payments",link:"",description:"some stuff right here"}, {title:"Reports",link:"",description:"some stuff right here"}]
+   } 
+
+   function handleCollectionButton(){
+    setCollectionTrigger(true)
+
+   } 
+
+
+
+  let homeScreenArray = [
+    {title:"+ New Loan",handle: handleAddClient},
+    {title:"TBD",link:"",description:"some stuff right here"},
+    {title:"Collect Payments",handle:handleCollectionButton}, 
+    {title:"Reports",handle: handleReportButton}]
     const [update,setUpdate] = React.useState(false);
 
 
@@ -131,6 +148,9 @@ export default function HomePage(){
     function handleShowMore(){
         setTableLength((prev)=>(prev+10) )
     }
+
+  
+    
 
     return(
         <>
@@ -165,12 +185,14 @@ export default function HomePage(){
     
         {/**Side Bar */}
   <div className='side-bar'>
-    
+<h1>{accounts.filter(function(obj){return obj.status==="Active"}).length} Active</h1>
 <h1 className='button-24' style={{backgroundColor:"grey"}}>Select Loan</h1>
-    {accounts.map((item)=>{
+    {accounts.sort((a, b) => a.status.localeCompare(b.status))
+ .map((item)=>{
+        let color = item.status === "Closed" ? "red" : item.status==="Pause" ? "blue" : ""
             return(
-
-             <button class="button-24"   onClick={()=>handleClick(item._id)} >
+            
+             <button class="button-24" style={{ backgroundColor: color }}   onClick={()=>handleClick(item._id)} >
              
                             <h3>{item.firstName} {item.lastName}</h3>
                        
@@ -187,6 +209,7 @@ export default function HomePage(){
      {(loadingData && loadingTrans) &&
    <DetailsTables transactions={transactions} data={data.filter(function(obj){return obj._id === _id})[0]}handleRefresh={handleRefresh} />
     }
+    
     {(loadingData && loadingTrans) &&
     <PaymentTableSummary transactions={transactions} loanDetails ={data.filter(function(obj){return obj._id === _id})[0]} handleRefresh={handleRefresh} handleShowMore={handleShowMore} tableLength={tableLength}/>
     }
@@ -202,6 +225,9 @@ export default function HomePage(){
 
     </div>
     <Popup trigger={trigger} setTrigger={setTrigger} children={<AddNewLoan/>} />
+    <Popup trigger={reportTrigger} setTrigger={setReportTrigger} children={<PaymentsThisWeek/>} />
+    <Popup trigger={collectionTrigger} setTrigger={setCollectionTrigger} children={<CollectionList/>} />
+
 
 
    </>       

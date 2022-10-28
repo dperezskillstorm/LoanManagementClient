@@ -11,8 +11,8 @@ function App() {
   <HomePage/>
     
    
-  {/* <LoanClients />
-  <PaymentTable/> */}
+  {/* <LoanClients /> */}
+  {/* <PaymentTable/> */}
   </>
   
   );
