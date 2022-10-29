@@ -1,7 +1,9 @@
 import React from 'react'
 import axios from 'axios'
+import DeleteButton from '../DeleteButton'
 
 function DetailsTables({data,transactions, handleRefresh}) {
+
     let totalPaid = transactions.filter(function(obj){return obj.status === "Paid"}).reduce((prev,curr)=> prev+curr.paymentAmount,0)
     const [customFormValues,setCustomFormValues] = React.useState({
             assignedTo: ""
@@ -25,12 +27,13 @@ function DetailsTables({data,transactions, handleRefresh}) {
       ]
 
    async function handleDelete (key){
+    
     await axios.delete(`http://localhost:8080/api/v1/loanDetails/${key}`)
     .then(resp =>{console.log(resp.data) })
     .then(resp => alert(`Deleted Client:${key}`))
     .catch(error =>{console.error(error); return Promise.reject(error)})
+    alert(`Acount Deleted`)
 
-    window.location.reload()
 
 }
 
@@ -149,7 +152,7 @@ const handleStatus = async (row,status) =>{
                     <td>{((data.loanAmount* (1+data.interestRate))- totalPaid)/data.paymentAmount}</td>
                     <td>{totalPaid}</td>
                     <td>{data.loanAmount* (1+data.interestRate)}</td>
-                    <td><button onClick={()=>handleDelete(data._id)}> Delete </button>
+                    <td><DeleteButton id={data} handleDelete={()=>handleDelete(data._id)} />
                     <button onClick={()=>handleStatus(data,"Closed")}> Close </button>
                     <button onClick={()=>handleStatus(data,"Pause")}> Pause </button>
                     <button onClick={()=>handleAssignTo(data)}> Change</button>

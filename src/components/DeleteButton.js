@@ -1,8 +1,40 @@
 import React from 'react'
+import Popup from './HomePage/Popup'
 
- export default function DeleteButton({_id, handleDelete}){
+
+ export default function DeleteButton({ handleDelete}){
+const [showOption, setShowOption] = React.useState(false);
+
+    function confirmDelete(){
+        console.log("do you want ot delte")
+        setShowOption(true)
+    
+    }
+
+    function handleDeleteInner(){
+        handleDelete()
+        setShowOption(false)
+
+
+    }
+    
+
+   
     return(
-        <button type='button' onClick={()=>handleDelete(_id)}>Delete</button>
-    )
+        <>
 
-}
+        { !showOption &&
+      
+        <button type='button' onClick={confirmDelete}>Delete</button>
+        }
+
+{showOption &&
+      
+      <button type='button' style={{backgroundColor: "red"}} onClick={handleDeleteInner}>ConfirmDelete</button>
+      }
+
+
+        </>
+    ) 
+    }
+
