@@ -130,15 +130,43 @@ return (
     <table id="customers">
         <tr>
             <thead>
+                <th>This Week</th>
+                <th></th>
+                <th></th>
+                <th style={{backgroundColor:"cornflowerblue"}}>Total</th>
+                <th style={{backgroundColor:"cornflowerblue"}} ></th>
+                <th style={{backgroundColor:"cornflowerblue"}}></th>
+                <th style={{backgroundColor:"cornflowerblue"}}></th>
+                <th style={{backgroundColor:"cornflowerblue"}}></th>
+
+            </thead>
+            <thead>
                 <th>Collected This Week</th>
                 <th>Interest Only</th>
                 <th>Estimated Return </th>
+                <th>Total Loans Out </th>
+                <th>Total Estimated Returns </th>
+                <th>Esimated ROI </th>
+                <th>Extra Earnings Interest Only</th>
+                <th>Total Balance</th>
+
             </thead>
             <tbody>
                 <tr>
                     <td>{combinedData.reduce((prev,curr)=> prev + curr.payment,0)}</td>
                     <td>{combinedData.filter(function(obj){return obj.status==="Interest"}).reduce((prev,curr)=> prev + curr.payment,0)}</td>
                     <td>{combinedData.reduce((prev,curr)=> prev + curr.payment,0) * 0.25}</td>
+                    <td>{data.reduce((prev,curr)=> prev + curr.loanAmount,0)}</td>
+                    <td>{data.reduce((prev,curr)=> prev + curr.loanAmount * (1+ curr.interestRate),0)}</td>
+                    <td>{data.reduce((prev,curr)=> prev + curr.loanAmount * (1+ curr.interestRate),0) -
+                    data.reduce((prev,curr)=> prev + curr.loanAmount,0)}</td>
+                    <td>{transactions.filter(function(obj){return obj.status ==="Interest"}).reduce((prev,curr)=> prev + curr.paymentAmount, 0)}</td>
+                    <td>{data.reduce((prev,curr)=> prev + curr.loanAmount * (1+ curr.interestRate),0) -
+                    transactions.filter(function(obj){return obj.status ==="Paid"}).reduce((prev,curr)=> prev + curr.paymentAmount, 0)}
+                    </td>
+
+
+
 
 
                 </tr>
