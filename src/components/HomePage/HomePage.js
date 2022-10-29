@@ -187,16 +187,22 @@ export default function HomePage(){
   <div className='side-bar'>
 <h1>{accounts.filter(function(obj){return obj.status==="Active"}).length} Active</h1>
 <h1 className='button-24' style={{backgroundColor:"grey"}}>Select Loan</h1>
+
     {accounts.sort((a, b) => a.status.localeCompare(b.status))
  .map((item)=>{
         let color = item.status === "Closed" ? "red" : item.status==="Pause" ? "blue" : ""
-            return(
-            
-             <button class="button-24" style={{ backgroundColor: color }}   onClick={()=>handleClick(item._id)} >
-             
+        let agent = item.assignedTo === null ? null : String(item.assignedTo).slice(0,1)
+            return(   
+        
+             <div className="button-24 badge1" data-badge= {agent} style={{ backgroundColor: color }}   onClick={()=>handleClick(item._id)} >
+
                             <h3>{item.firstName} {item.lastName}</h3>
-                       
-                        </button>)
+                          
+                        </div>
+                    
+                        
+                        )
+      
                         
             })} 
  </div>
