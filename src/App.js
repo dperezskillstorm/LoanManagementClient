@@ -1,16 +1,16 @@
 import './App.css';
-import HomePage from './components/HomePage/HomePage';
+import {Dashboard, HomePage} from './Page';
 import LoanClients from './components/LoanClients/LoanClients';
 import PaymentTable from './components/PaymentTable';
-import Popup from './components/HomePage/Popup';
+import Popup from './Page/Popup';
 
 function App() {
   return (
     <>
 
   <HomePage/>
-    
-   
+  {/* <Dashboard/> */}
+  
   {/* <LoanClients /> */}
   {/* <PaymentTable/> */}
   </>

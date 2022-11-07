@@ -81,32 +81,34 @@ function CollectionList(props) {
     },[])
 
 
-
-    function convertToWeek(date){
-        const today = new Date(date)
-        var fiscalStartDate = new Date(2022,1,1)
-        const dateDiff = Math.abs(today-fiscalStartDate);
-        const weeks =  Math.floor((dateDiff/8.64e7)/7);
+function convertToWeek(customDate){
+ 
+        const today = new Date(customDate)
+        var fiscalStartDate = new Date(today.getFullYear(),0,1)
+        const dateDiff = Math.floor((today - fiscalStartDate)/(24*60*60*1000));
+        // const weeks =  Math.floor((dateDiff/8.64e7)/7);
+        const weeks =  Math.ceil((today.getDay()+ dateDiff)/7);
         return weeks
-    }
+
+}
+
 
     React.useEffect(()=>{
         const today = new Date()
-        var fiscalStartDate = new Date(2022,1,3)
-        const dateDiff = Math.abs(today-fiscalStartDate);
-        const weeks =  Math.floor((dateDiff/8.64e7)/7);
+        var fiscalStartDate = new Date(today.getFullYear(),0,1)
+        const dateDiff = Math.floor((today - fiscalStartDate)/(24*60*60*1000));
+        // const weeks =  Math.floor((dateDiff/8.64e7)/7);
+        const weeks =  Math.ceil((today.getDay()+ dateDiff)/7);
         setCurrentWeek(weeks)
     },[])
-
 
     const [combinedData,setCombinedData] =React.useState([])
 
     function matchData(){
         // console.log(`this week is ${currentWeek}`)
         let array = []
-            // console.log(convertToWeek(transaction.date))
             for (let i = 0;i<data.length-1; i++){
-                if(data[i].status === "Active" && data[i].assignedTo === "Cristina"){
+                if(data[i].status === "Active" && data[i].assignedTo === "Cristina" ){
                     console.log(data[i].status)
                     let paymentsReceived = transactions.filter(function(obj){return obj.loanId===data[i]._id}).filter(function(obj){return obj.status==="Paid"}).reduce((prev,curr)=> prev + curr.paymentAmount,0)
                     let name = data[i].firstName +" " + data[i].lastName

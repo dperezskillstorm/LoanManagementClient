@@ -1,5 +1,5 @@
 import React from 'react'
-import Popup from './HomePage/Popup'
+import Popup from '../Page/Popup'
 
 
  export default function DeleteButton({ handleDelete}){

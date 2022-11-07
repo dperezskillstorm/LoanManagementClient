@@ -79,19 +79,31 @@ function PaymentsThisWeek(props) {
 
 
 
-    function convertToWeek(date){
-        const today = new Date(date)
-        var fiscalStartDate = new Date(2022,1,1)
-        const dateDiff = Math.abs(today-fiscalStartDate);
-        const weeks =  Math.floor((dateDiff/8.64e7)/7);
+    function convertToWeek(customDate){
+ 
+        const today = new Date(customDate)
+        var fiscalStartDate = new Date(today.getFullYear(),0,1)
+        const dateDiff = Math.floor((today - fiscalStartDate)/(24*60*60*1000));
+        // const weeks =  Math.floor((dateDiff/8.64e7)/7);
+        const weeks =  Math.ceil((today.getDay()+ dateDiff)/7);
         return weeks
-    }
+
+}
+
+function convertToYear(customDate){
+ 
+    const today = new Date(customDate)
+    return today.getFullYear()
+
+}
+
 
     React.useEffect(()=>{
         const today = new Date()
-        var fiscalStartDate = new Date(2022,1,3)
-        const dateDiff = Math.abs(today-fiscalStartDate);
-        const weeks =  Math.floor((dateDiff/8.64e7)/7);
+        var fiscalStartDate = new Date(today.getFullYear(),0,1)
+        const dateDiff = Math.floor((today - fiscalStartDate)/(24*60*60*1000));
+        // const weeks =  Math.floor((dateDiff/8.64e7)/7);
+        const weeks =  Math.ceil((today.getDay()+ 1+ dateDiff)/7);
         setCurrentWeek(weeks)
     },[])
 
@@ -103,20 +115,20 @@ function PaymentsThisWeek(props) {
         let array = []
             // console.log(convertToWeek(transaction.date))
             for (let i = 0;i<transactions.length; i++){
-                if(convertToWeek(transactions[i].date) == currentWeek){
-              
-
+                if((convertToWeek(transactions[i].date) === currentWeek)&& (convertToYear(transactions[i].date)===2022)){
+                    console.log(convertToWeek(transactions[i].date))
+                    console.log(convertToYear(transactions[i].date))
                     let payment = transactions[i].paymentAmount
                     let date = transactions[i].date
                     let week = convertToWeek(date)
                     let name = data.filter(function(obj){return obj._id ===transactions[i].loanId })
                     let status = transactions[i].status
-                    let row = {loanNum: transactions[i].loanId, firstName: name[0].firstName, lastName: name[0].lastName, payment:payment, status: status, date: date, week:week}
+                    let row = {interestRate: name[0].interestRate ,loanNum: transactions[i].loanId, firstName: name[0].firstName, lastName: name[0].lastName, payment:payment, status: status, date: date, week:week}
                     array.push(row)
              
 
                 } else{
-                    
+                    console.log(`week does not match ${transactions[i].date}`)
                 }
             
             }
@@ -155,7 +167,7 @@ return (
                 <tr>
                     <td>{combinedData.reduce((prev,curr)=> prev + curr.payment,0)}</td>
                     <td>{combinedData.filter(function(obj){return obj.status==="Interest"}).reduce((prev,curr)=> prev + curr.payment,0)}</td>
-                    <td>{combinedData.reduce((prev,curr)=> prev + curr.payment,0) * 0.25}</td>
+                    <td>{combinedData.reduce((prev,curr)=> prev + curr.interestRate,0) * 100}</td>
                     <td>{data.reduce((prev,curr)=> prev + curr.loanAmount,0)}</td>
                     <td>{data.reduce((prev,curr)=> prev + curr.loanAmount * (1+ curr.interestRate),0)}</td>
                     <td>{data.reduce((prev,curr)=> prev + curr.loanAmount * (1+ curr.interestRate),0) -

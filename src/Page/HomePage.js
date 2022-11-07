@@ -1,12 +1,12 @@
 import React from 'react'
-import "../HomePage/homepage.css"
+import "./homepage.css"
 import axios from "axios"
-import PaymentTableSummary from '../PaymentTableSummary';
+import PaymentTableSummary from '../components/PaymentTableSummary';
 import DetailsTables from './DetailsTables';
 import Popup from './Popup';
-import AddNewLoan from '../LoanClients/AddNewLoan';
-import PaymentsThisWeek from '../Reports/PaymentsThisWeek';
-import CollectionList from '../Reports/CollectionList';
+import AddNewLoan from '../components/LoanClients/AddNewLoan';
+import PaymentsThisWeek from '../components/Reports/PaymentsThisWeek';
+import CollectionList from '../components/Reports/CollectionList';
 
 
 export default function HomePage(){
@@ -87,9 +87,10 @@ export default function HomePage(){
 
             React.useEffect(()=>{
                 const today = new Date()
-                var fiscalStartDate = new Date(2022,1,1)
-                const dateDiff = Math.abs(today-fiscalStartDate);
-                const weeks =  Math.floor((dateDiff/8.64e7)/7);
+                var fiscalStartDate = new Date(today.getFullYear(),0,1)
+                const dateDiff = Math.floor((today - fiscalStartDate)/(24*60*60*1000));
+                // const weeks =  Math.floor((dateDiff/8.64e7)/7);
+                const weeks =  Math.ceil((today.getDay()+ dateDiff)/7);
                 setCurrentWeek(weeks)
             },[])
 
@@ -186,7 +187,7 @@ export default function HomePage(){
         {/**Side Bar */}
   <div className='side-bar'>
 <h1>{accounts.filter(function(obj){return obj.status==="Active"}).length} Active</h1>
-<h1 className='button-24' style={{backgroundColor:"grey"}}>Select Loan</h1>
+<h1 className='button-24' style={{backgroundColor:"grey", minHeight:50}}>Select Loan</h1>
 
     {accounts.sort((a, b) => a.status.localeCompare(b.status))
  .map((item)=>{

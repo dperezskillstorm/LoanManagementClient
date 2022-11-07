@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
-import DeleteButton from '../DeleteButton'
+import DeleteButton from '../components/DeleteButton'
+import NotesInput from '../components/Form Parts/NotesInput'
 
 function DetailsTables({data,transactions, handleRefresh}) {
 
@@ -21,7 +22,7 @@ function DetailsTables({data,transactions, handleRefresh}) {
 
 
       const StatusOptions = [
-        {value: null, text:"Change"},
+        {value: null, text:"↓↓↓"},
         {value: "David", text:"David"},
         {value: "Cristina", text:"Cristina"},
       ]
@@ -163,11 +164,13 @@ const handleStatus = async (row,status) =>{
                 <thead>
                     <tr>
                         <th>Payment Amount</th>
+                        <th colspan="4">Notes</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>{data.paymentAmount}</td>
+                       <NotesInput colspan={4} data={data}/>
                     </tr>
                 </tbody>
 

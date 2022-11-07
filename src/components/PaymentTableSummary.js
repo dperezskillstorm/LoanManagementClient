@@ -15,7 +15,8 @@ export default function PaymentTableSummary(props){
         {value: "", text:"Choose"},
         {value: "Paid", text:"Paid"},
         {value: "Interest", text:"Interest"},
-        {value: "Draw", text:"Draw"},
+        {value: "Draw", text:"Draw"}, 
+      
 ]
  
     const [currentWeek, setCurrentWeek] = React.useState();
@@ -164,7 +165,8 @@ async function processPaymentInterest (period,date,payment){
 
 return(
         <Fragment>
-    <h1>Payment Schedule: {props.loanDetails.firstName} {props.loanDetails.lastName}</h1>  <button onClick={props.handleShowMore}>Show More</button>         
+            <div className='paymentTable'>
+    <h1 >Payment Schedule: {props.loanDetails.firstName} {props.loanDetails.lastName}</h1>  <button onClick={props.handleShowMore}>Show More</button>         
    <form onSubmit={handleCustomSubmit}>
 
     <table  id="customers">
@@ -220,6 +222,8 @@ return(
         
     </table>
             </form>
+
+            </div>
     
     </Fragment>
     )
