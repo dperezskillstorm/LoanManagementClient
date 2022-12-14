@@ -164,7 +164,8 @@ return (
             </tr>
         </thead>
     {console.log(combinedData)}
-    {combinedData.map((data)=> {
+    {combinedData.sort((a,b)=> a.paymentLeft - b.paymentLeft)
+    .map((data)=> {
         return(
             <tbody>
                 <tr>

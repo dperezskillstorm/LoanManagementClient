@@ -9,6 +9,7 @@ function PaymentsThisWeek(props) {
     const [data, setData] = React.useState([])
     const [transactions, setTransactions] = React.useState([])
     const [currentWeek, setCurrentWeek] = React.useState()
+    const [startWeek, setStartWeek] = React.useState();
     
 
 
@@ -105,6 +106,9 @@ function convertToYear(customDate){
         // const weeks =  Math.floor((dateDiff/8.64e7)/7);
         const weeks =  Math.ceil((today.getDay()+ 1+ dateDiff)/7);
         setCurrentWeek(weeks)
+        let getMonday = new Date(today.getFullYear(),today.getMonth(),today.getDate()-today.getDay()+1);
+        setStartWeek(getMonday);
+
     },[])
 
 
@@ -115,9 +119,9 @@ function convertToYear(customDate){
         let array = []
             // console.log(convertToWeek(transaction.date))
             for (let i = 0;i<transactions.length; i++){
-                if((convertToWeek(transactions[i].date) === currentWeek)&& (convertToYear(transactions[i].date)===2022)){
-                    console.log(convertToWeek(transactions[i].date))
-                    console.log(convertToYear(transactions[i].date))
+                if(Date(transactions[i].date) > startWeek){
+                    console.log(transactions[i].date)
+                    console.log(startWeek)
                     let payment = transactions[i].paymentAmount
                     let date = transactions[i].date
                     let week = convertToWeek(date)

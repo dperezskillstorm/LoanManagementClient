@@ -1,14 +1,7 @@
 import styled from 'styled-components'
 
 const Wrapper = styled.main`
-  nav {
-    width: var(--fluid-width);
-    max-width: var(--max-width);
-    margin: 0 auto;
-    height: var(--nav-height);
-    display: flex;
-    align-items: center;
-  }
+
   .page {
     min-height: calc(100vh - var(--nav-height));
     display: grid;
@@ -37,6 +30,15 @@ const Wrapper = styled.main`
       display:block;
       height:50hv;
     }
+  }
+  .main{
+    display: flexbox;
+    flex-direction: row;
+  }
+  .sidebar{
+    width: 310px;
+    background-color: lightcoral;
+    
   }
 `
 export default Wrapper

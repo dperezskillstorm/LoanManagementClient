@@ -9,14 +9,6 @@ import { changeLoanDetail } from "../../store/features/loanDetailSlice";
 import ReadOnlyClientLoan from "./ReadOnlyClientLoan"
 
 export default function AddNewLoan(){
-    const dispatch = useDispatch()
-
-    // const [loading, setLoading] = useState(true)
-    
-    //States
-    const [data, setData] = useState([]);
-    const [transactions, setTransactions] = useState([]);
-
     
     const [formValues, setFormValues] = React.useState({
         _id: "",

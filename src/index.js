@@ -10,17 +10,21 @@ import { Provider } from 'react-redux';
 import store from './store/store';
 import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
+import { AppProvider } from './context/appContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-let persistor = persistStore(store);
+// let persistor = persistStore(store);
 
 root.render(
   <React.StrictMode>
-    <Provider store = {store}>
-      <PersistGate persistor={persistor}>
+    <AppProvider>
+
+    {/* <Provider store = {store}>
+      <PersistGate persistor={persistor}> */}
     <App />
-    </PersistGate>
-    </Provider>
+    {/* </PersistGate>
+    </Provider> */}
+      </AppProvider>
   </React.StrictMode>
 );
 

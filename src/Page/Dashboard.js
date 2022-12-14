@@ -1,6 +1,6 @@
 import React from 'react';
-import main from "../Assets/main-image.svg"
-import Wrapper from '../Wrappers/WrapperDashboard';
+import main from "../assets/main-image.svg"
+import Wrapper from '../Wrappers/WrapperAccountList';
 
 
 
